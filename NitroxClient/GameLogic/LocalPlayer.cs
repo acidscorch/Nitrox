@@ -22,6 +22,11 @@ namespace NitroxClient.GameLogic
         private readonly Lazy<GameObject> playerModel;
         private readonly Lazy<GameObject> bodyPrototype;
 
+        private Vector3 lastMovementLocation = Vector3.zero;
+        private Vector3 lastMovementVelocity = Vector3.zero;
+        private Quaternion lastMovementBodyRotation = new Quaternion();
+        private Quaternion lastMovementAimingRotation = new Quaternion();
+
         public GameObject Body => body.Value;
 
         public GameObject PlayerModel => playerModel.Value;
@@ -52,13 +57,34 @@ namespace NitroxClient.GameLogic
             if (vehicle.HasValue)
             {
                 movement = new VehicleMovement(multiplayerSession.Reservation.PlayerId, vehicle.Value);
+                packetSender.Send(movement);
             }
             else
             {
-                movement = new Movement(multiplayerSession.Reservation.PlayerId, location, velocity, bodyRotation, aimingRotation);
-            }
+                //reduce unneeded net traffic and server package floating if no movement has happened, because this method is called every frame 
+                
+                bool _needSend = false;
 
-            packetSender.Send(movement);
+                //use .ToString compare to skip minor changes
+                if (!(lastMovementLocation.ToString().Equals(location.ToString()) && lastMovementBodyRotation.ToString().Equals(bodyRotation.ToString()) && lastMovementVelocity.ToString().Equals(velocity.ToString()) && lastMovementAimingRotation.ToString().Equals(aimingRotation.ToString())))
+                {
+                    _needSend = true;
+                }
+
+                if (_needSend)
+                {
+                    lastMovementLocation = location;
+                    lastMovementVelocity = velocity;
+                    lastMovementBodyRotation = bodyRotation;
+                    lastMovementAimingRotation = aimingRotation;
+
+                    movement = new Movement(multiplayerSession.Reservation.PlayerId, location, velocity, bodyRotation, aimingRotation);
+                    packetSender.Send(movement);
+
+                }
+
+            }
+           
         }
 
         public void AnimationChange(AnimChangeType type, AnimChangeState state)
