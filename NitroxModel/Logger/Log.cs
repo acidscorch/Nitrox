@@ -87,6 +87,11 @@ namespace NitroxModel.Logger
             log.Debug(Format(fmt, arg));
         }
 
+        public static void Debug(string fmt)
+        {
+            log.Debug(fmt);
+        }
+
         public static void Debug(object o)
         {
             string msg = o == null ? "null" : o.ToString();
