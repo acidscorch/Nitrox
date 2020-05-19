@@ -227,6 +227,11 @@
     </Compile>
     <Compile Include="Main.cs" />
     <Compile Include="Modules\NitroxPatchesModule.cs" />
+    <Compile Include="Patches\Dynamic\BaseDeconstructable_Constructor_Patch.cs" />
+    <Compile Include="Patches\Dynamic\BaseRoot_Patch.cs" />
+    <Compile Include="Patches\Dynamic\BuilderTool_Patch.cs" />
+    <Compile Include="Patches\Dynamic\CellManager_Patch.cs" />
+    <Compile Include="Patches\Dynamic\ConstructableBase_Patch.cs" />
     <Compile Include="Patches\Dynamic\KeypadDoorConsole_AcceptNumberField_Patch.cs" />
     <Compile Include="Patches\Dynamic\Player_OnKill_Patch.cs" />
     <Compile Include="Patches\Dynamic\PropulsionCannon_ReleaseGrabbedObject_Patch.cs" />

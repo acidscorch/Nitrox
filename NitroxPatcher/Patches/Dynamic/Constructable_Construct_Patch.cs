@@ -12,6 +12,24 @@ namespace NitroxPatcher.Patches.Dynamic
         public static readonly Type TARGET_CLASS = typeof(Constructable);
         public static readonly MethodInfo TARGET_METHOD = TARGET_CLASS.GetMethod("Construct");
 
+        public static bool Prefix(Constructable __instance)
+        {
+            return NitroxServiceLocator.LocateService<Building>().Constructable_Construct_Pre(__instance);
+        }
+
+        public static void Postfix(Constructable __instance, bool __result)
+        {
+            NitroxServiceLocator.LocateService<Building>().Constructable_Construct_Post(__instance, __result);
+        }
+
+        public override void Patch(HarmonyInstance harmony)
+        {
+            PatchMultiple(harmony, TARGET_METHOD, true, true, false);
+        }
+
+        /*public static readonly Type TARGET_CLASS = typeof(Constructable);
+        public static readonly MethodInfo TARGET_METHOD = TARGET_CLASS.GetMethod("Construct");
+
         private static Base lastTargetBase;
         private static Int3 lastTargetBaseOffset;
 
@@ -46,6 +64,28 @@ namespace NitroxPatcher.Patches.Dynamic
             {
                 NitroxServiceLocator.LocateService<Building>().ConstructionComplete(__instance.gameObject, Optional.OfNullable(lastTargetBase), lastTargetBaseOffset);
             }
+        }
+
+        public override void Patch(HarmonyInstance harmony)
+        {
+            PatchMultiple(harmony, TARGET_METHOD, true, true, false);
+        }*/
+    }
+
+    public class Constructable_NotifyConstructedChanged_Patch : NitroxPatch, IDynamicPatch
+    {
+        public static readonly Type TARGET_CLASS = typeof(Constructable);
+        public static readonly MethodInfo TARGET_METHOD = TARGET_CLASS.GetMethod("NotifyConstructedChanged", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        public static bool Prefix(Constructable __instance, bool constructed)
+        {
+            //return NitroxServiceLocator.LocateService<Building>().Constructable_NotifyConstructedChanged_Pre(__instance, constructed);
+            return true;
+        }
+
+        public static void Postfix(Constructable __instance)
+        {
+            NitroxServiceLocator.LocateService<Building>().Constructable_NotifyConstructedChanged_Post(__instance);
         }
 
         public override void Patch(HarmonyInstance harmony)

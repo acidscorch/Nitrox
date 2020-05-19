@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace NitroxPatcher.Patches.Dynamic
 {
+    /*
     public class Builder_TryPlace_Patch : NitroxPatch, IDynamicPatch
     {
         public static readonly Type TARGET_CLASS = typeof(Builder);
@@ -31,9 +32,9 @@ namespace NitroxPatcher.Patches.Dynamic
 
                 if (instruction.opcode.Equals(PLACE_BASE_INJECTION_OPCODE) && instruction.operand.Equals(PLACE_BASE_INJECTION_OPERAND))
                 {
-                    /*
-                     *  Multiplayer.Logic.Building.PlaceBasePiece(componentInParent, component.TargetBase, CraftData.GetTechType(Builder.prefab), Builder.placeRotation);
-                     */
+                    
+                    //  Multiplayer.Logic.Building.PlaceBasePiece(componentInParent, component.TargetBase, CraftData.GetTechType(Builder.prefab), Builder.placeRotation);
+                     
                     yield return TranspilerHelper.LocateService<Building>();
                     yield return new CodeInstruction(OpCodes.Ldloc_1);
                     yield return new CodeInstruction(OpCodes.Ldloc_0);
@@ -47,9 +48,9 @@ namespace NitroxPatcher.Patches.Dynamic
 
                 if (instruction.opcode.Equals(PLACE_FURNITURE_INJECTION_OPCODE) && instruction.operand.Equals(PLACE_FURNITURE_INJECTION_OPERAND))
                 {
-                    /*
-                     *  Multiplayer.Logic.Building.PlaceFurniture(gameObject, CraftData.GetTechType(Builder.prefab), Builder.ghostModel.transform.position, Builder.placeRotation);
-                     */
+                    
+                    //  Multiplayer.Logic.Building.PlaceFurniture(gameObject, CraftData.GetTechType(Builder.prefab), Builder.ghostModel.transform.position, Builder.placeRotation);
+                     
                     yield return TranspilerHelper.LocateService<Building>();
                     yield return new CodeInstruction(OpCodes.Ldloc_2);
                     yield return new CodeInstruction(OpCodes.Ldsfld, TARGET_CLASS.GetField("prefab", BindingFlags.Static | BindingFlags.NonPublic));
@@ -67,5 +68,5 @@ namespace NitroxPatcher.Patches.Dynamic
         {
             PatchTranspiler(harmony, TARGET_METHOD);
         }
-    }
+    }*/
 }

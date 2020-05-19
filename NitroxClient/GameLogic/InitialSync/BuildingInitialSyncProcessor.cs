@@ -74,11 +74,11 @@ namespace NitroxClient.GameLogic.InitialSync
             {
                 foreach (BasePiece basePiece in basePieces)
                 {
-                    buildEventQueue.EnqueueBasePiecePlaced(basePiece);
+                    buildEventQueue.EnqueueConstructionBegin(basePiece);
 
                     if (basePiece.ConstructionCompleted)
                     {
-                        buildEventQueue.EnqueueConstructionCompleted(basePiece.Id, basePiece.BaseId);
+                        buildEventQueue.EnqueueConstructionCompleted(basePiece.Id);
                     }
                     else
                     {
@@ -111,7 +111,7 @@ namespace NitroxClient.GameLogic.InitialSync
 
             foreach (BasePiece item in basePieces)
             {
-                if ((item.TechType.Name.Contains("Corridor") || item.TechType.Name.Contains("Room") || item.TechType.Name.Contains("Foundation") || item.TechType.Name.Contains("Connector")))
+                if ((item.TechType.Name.Contains("Corridor") || item.TechType.Name.Contains("Room") || item.TechType.Name.Contains("Foundation") || item.TechType.Name.Contains("Connector") || (item.TechType.Name.Contains("Moonpool")&&!item.TechType.Name.Contains("Console"))))
                 {
                     internalList.Add(item);
 
@@ -120,7 +120,7 @@ namespace NitroxClient.GameLogic.InitialSync
                     // #ISSUE 1030#
                     foreach (BasePiece item2 in basePieces)
                     {
-                        if(item2.TechType.Name.Contains("Reinforcement") && item.ItemPosition == item2.ItemPosition && !internalList.Contains(item2))
+                        if( (item2.TechType.Name.Contains("Reinforcement") || item2.TechType.Name.Contains("Bulkhead")) && item.ItemPosition == item2.ItemPosition && !internalList.Contains(item2))
                         {
                             internalList.Add(item2);
                         }
@@ -149,8 +149,7 @@ namespace NitroxClient.GameLogic.InitialSync
             // All finished energy storage pieces. They need to be placed before energy-consuming objects are placed
             foreach (BasePiece item in basePieces)
             {
-                //ToDo: include reactors, etc. when they are fixed
-                if (item.ConstructionCompleted && (item.TechType.Name.Contains("Solar")) && !internalList.Contains(item))
+                if (item.ConstructionCompleted && (item.TechType.Name.Contains("Solar") || item.TechType.Name.ToUpper().Contains("REACTOR") || item.TechType.Name.Contains("ThermalPlant") || item.TechType.Name.Contains("PowerTransmitter")) && !internalList.Contains(item))
                 {
                     internalList.Add(item);
                 }

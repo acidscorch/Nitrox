@@ -13,6 +13,7 @@ namespace NitroxPatcher.Patches.Dynamic
      * build that this object can be deconstructed.)  When this oject is destroyed (we call deconstruct) we want to store its id
      * so that it can be later transfered to the ghost object that replaces it.
      */
+     /*
     public class BaseDeconstructable_Deconstructor_Patch : NitroxPatch, IDynamicPatch
     {
         public static readonly Type TARGET_CLASS = typeof(BaseDeconstructable);
@@ -28,5 +29,5 @@ namespace NitroxPatcher.Patches.Dynamic
         {
             PatchPrefix(harmony, TARGET_METHOD);
         }
-    }
+    }*/
 }

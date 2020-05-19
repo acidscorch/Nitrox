@@ -1,5 +1,6 @@
 ﻿using NitroxClient.Communication.Abstract;
 using NitroxClient.Communication.Packets.Processors.Abstract;
+using NitroxClient.GameLogic.Bases;
 using NitroxClient.GameLogic.Helper;
 using NitroxClient.MonoBehaviours;
 using NitroxModel.Logger;
@@ -11,16 +12,18 @@ namespace NitroxClient.Communication.Packets.Processors
 {
     public class BaseDeconstructionBeginProcessor : ClientPacketProcessor<BaseDeconstructionBegin>
     {
-        private readonly IPacketSender packetSender;
+        private BuildThrottlingQueue buildEventQueue;
 
-        public BaseDeconstructionBeginProcessor(IPacketSender packetSender)
+        public BaseDeconstructionBeginProcessor(BuildThrottlingQueue buildEventQueue)
         {
-            this.packetSender = packetSender;
+            this.buildEventQueue = buildEventQueue;
         }
 
         public override void Process(BaseDeconstructionBegin packet)
         {
-            Log.Info("Received deconstruction packet for id: " + packet.Id);
+            buildEventQueue.EnqueueDeconstructionBegin(packet.Id);
+
+            /*Log.Info("Received deconstruction packet for id: " + packet.Id);
 
             GameObject deconstructing = NitroxEntity.RequireObjectFrom(packet.Id);
             
@@ -39,7 +42,7 @@ namespace NitroxClient.Communication.Packets.Processors
                 {
                     constructable.SetState(false, false);
                 }
-            }
+            }*/
         }
     }
 }

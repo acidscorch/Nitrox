@@ -15,7 +15,7 @@ using UnityEngine;
 using static NitroxClient.GameLogic.Helper.TransientLocalObjectManager;
 using NitroxModel_Subnautica.Helper;
 using NitroxModel.DataStructures;
-using NitroxClient.GameLogic.Bases.Spawning;
+using NitroxClient.GameLogic;
 
 namespace NitroxClient.MonoBehaviours
 {
@@ -87,9 +87,9 @@ namespace NitroxClient.MonoBehaviours
 
         private void ActionBuildEvent(BuildEvent buildEvent)
         {
-            if (buildEvent is BasePiecePlacedEvent)
+            if (buildEvent is ConstructionBeginEvent)
             {
-                PlaceBasePiece((BasePiecePlacedEvent)buildEvent);
+                ConstructionBegin((ConstructionBeginEvent)buildEvent);
             }
             else if (buildEvent is ConstructionCompletedEvent)
             {
@@ -109,7 +109,33 @@ namespace NitroxClient.MonoBehaviours
             }
         }
 
-        private void PlaceBasePiece(BasePiecePlacedEvent basePiecePlacedBuildEvent)
+        private void ConstructionBegin(ConstructionBeginEvent constructionBegin)
+        {
+            NitroxServiceLocator.LocateService<Building>().Constructable_ConstructionBegin_Remote(constructionBegin.BasePiece);
+        }
+
+        private void ConstructionCompleted(ConstructionCompletedEvent constructionCompleted)
+        {
+            NitroxServiceLocator.LocateService<Building>().Constructable_ConstructionCompleted_Remote(constructionCompleted.PieceId);
+        }
+
+        private void ConstructionAmountChanged(ConstructionAmountChangedEvent amountChanged)
+        {
+            NitroxServiceLocator.LocateService<Building>().Constructable_AmountChanged_Remote(amountChanged.Id, amountChanged.Amount);
+        }
+
+        private void DeconstructionBegin(DeconstructionBeginEvent deconstructBegin)
+        {
+            NitroxServiceLocator.LocateService<Building>().Constructable_DeconstructionBegin_Remote(deconstructBegin.PieceId);
+        }
+
+        private void DeconstructionCompleted(DeconstructionCompletedEvent deconstructCompleted)
+        {
+            NitroxServiceLocator.LocateService<Building>().Constructable_DeconstructionComplete_Remote(deconstructCompleted.PieceId);
+        }
+
+        /*
+        private void PlaceBasePiece(ConstructionBeginEvent basePiecePlacedBuildEvent)
         {
             Log.Info("BuildBasePiece " + basePiecePlacedBuildEvent.BasePiece.Id + " type: " + basePiecePlacedBuildEvent.BasePiece.TechType + " parentId: " + basePiecePlacedBuildEvent.BasePiece.ParentId.OrElse(null));
             BasePiece basePiece = basePiecePlacedBuildEvent.BasePiece;
@@ -149,9 +175,9 @@ namespace NitroxClient.MonoBehaviours
 
             NitroxEntity.SetNewId(gameObject, basePiece.Id);
             
-            /**
-             * Manually call start to initialize the object as we may need to interact with it within the same frame.
-             */
+            
+            // Manually call start to initialize the object as we may need to interact with it within the same frame.
+             
             MethodInfo startCrafting = typeof(Constructable).GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Instance);
             Validate.NotNull(startCrafting);
             startCrafting.Invoke(constructable, new object[] { });
@@ -310,5 +336,6 @@ namespace NitroxClient.MonoBehaviours
             GameObject deconstructing = NitroxEntity.RequireObjectFrom(completed.PieceId);
             UnityEngine.Object.Destroy(deconstructing);
         }
+        */
     }
 }

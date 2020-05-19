@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
+using NitroxClient.GameLogic;
 using NitroxClient.MonoBehaviours;
+using NitroxModel.Core;
 using NitroxModel.DataStructures;
 using NitroxModel.Helper;
 using NitroxModel.Logger;
@@ -22,7 +24,7 @@ namespace NitroxPatcher.Patches.Dynamic
          * them so that we can update the newly placed pieces with the proper id.  The new
          * pieces are added by <see cref="Base_SpawnPiece_Patch"/>
          */
-        public static Dictionary<string, NitroxId> NitroxIdByObjectKey = new Dictionary<string, NitroxId>();
+        //public static Dictionary<string, NitroxId> NitroxIdByObjectKey = new Dictionary<string, NitroxId>();
 
         public static void Prefix(Base __instance)
         {
@@ -31,7 +33,9 @@ namespace NitroxPatcher.Patches.Dynamic
                 return;
             }
 
-            Transform[] cellObjects = (Transform[] )__instance.ReflectionGet("cellObjects");
+            NitroxServiceLocator.LocateService<Building>().Base_ClearGeometry_Pre(__instance);
+
+            /*Transform[] cellObjects = (Transform[] )__instance.ReflectionGet("cellObjects");
 
             if(cellObjects == null)
             {
@@ -61,13 +65,14 @@ namespace NitroxPatcher.Patches.Dynamic
                         }
                     }
                 }
-            }
+            }*/
         }
         
+        /*
         public static string getObjectKey(string name, Vector3 postion)
         {
             return name + postion.ToString();
-        }
+        }*/
 
         public override void Patch(HarmonyInstance harmony)
         {

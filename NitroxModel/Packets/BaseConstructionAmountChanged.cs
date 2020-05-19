@@ -8,16 +8,18 @@ namespace NitroxModel.Packets
     {
         public NitroxId Id { get; }
         public float ConstructionAmount { get; }
+        public bool Construct { get; }
 
-        public BaseConstructionAmountChanged(NitroxId id, float constructionAmount)
+        public BaseConstructionAmountChanged(NitroxId id, float constructionAmount, bool construct)
         {
             Id = id;
             ConstructionAmount = constructionAmount;
+            Construct = construct;
         }
 
         public override string ToString()
         {
-            return "[BaseConstructionAmountChanged Id:" + Id + " ConstructionAmount: " + ConstructionAmount + "]";
+            return "[BaseConstructionAmountChanged Id:" + Id + " ConstructionAmount: " + ConstructionAmount + " Construct: " + Construct + "]";
         }
     }
 }

@@ -8,7 +8,8 @@ using NitroxModel.Helper;
 using UnityEngine;
 
 namespace NitroxPatcher.Patches.Dynamic
-{
+{ 
+    /*
     public class BuilderTool_HandleInput_Patch : NitroxPatch, IDynamicPatch
     {
         public static readonly Type TARGET_CLASS = typeof(BuilderTool);
@@ -26,9 +27,9 @@ namespace NitroxPatcher.Patches.Dynamic
                 yield return instruction;
                 if (instruction.opcode.Equals(INJECTION_OPCODE) && instruction.operand.Equals(INJECTION_OPERAND))
                 {
-                    /*
-                     * Multiplayer.Logic.Building.DeconstructionBegin(constructable.gameObject);
-                     */
+                    
+                     // Multiplayer.Logic.Building.DeconstructionBegin(constructable.gameObject);
+                     
                     yield return TranspilerHelper.LocateService<Building>();
                     yield return original.Ldloc<Constructable>();
                     yield return new CodeInstruction(OpCodes.Callvirt, typeof(Component).GetMethod("get_gameObject", BindingFlags.Instance | BindingFlags.Public));
@@ -41,5 +42,5 @@ namespace NitroxPatcher.Patches.Dynamic
         {
             PatchTranspiler(harmony, TARGET_METHOD);
         }
-    }
+    }*/
 }

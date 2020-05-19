@@ -63,7 +63,7 @@ namespace NitroxClient.MonoBehaviours.Overrides
 
             MultiplayerBuilder.prefab = modulePrefab;
             MultiplayerBuilder.Update();
-            return true;
+            return MultiplayerBuilder.canPlace;
         }
 
         // Token: 0x06002B99 RID: 11161 RVA: 0x00103D44 File Offset: 0x00101F44
@@ -105,6 +105,7 @@ namespace NitroxClient.MonoBehaviours.Overrides
             }
 
             MultiplayerBuilder.canPlace = MultiplayerBuilder.UpdateAllowed();
+
             Transform expr_58 = MultiplayerBuilder.ghostModel.transform;
             expr_58.position = MultiplayerBuilder.placePosition + MultiplayerBuilder.placeRotation * MultiplayerBuilder.ghostModelPosition;
             expr_58.rotation = MultiplayerBuilder.placeRotation * MultiplayerBuilder.ghostModelRotation;
@@ -185,7 +186,55 @@ namespace NitroxClient.MonoBehaviours.Overrides
                 transform.position = MultiplayerBuilder.placePosition;
                 transform.rotation = MultiplayerBuilder.placeRotation;
 
+                BaseGhost component = ghostModel.GetComponent<BaseGhost>();
+
+#if TRACE && BUILDING
+
+                NitroxModel.Logger.Log.Debug("MulitplayerBuilder - constructableBase: " + componentInParent + " componentType: " + component.GetType());
+#endif
+
                 flag2 = componentInParent.UpdateGhostModel(MultiplayerBuilder.GetAimTransform(), MultiplayerBuilder.ghostModel, default(RaycastHit), out flag, componentInParent);
+
+#if TRACE && BUILDING
+                if (!flag2)
+                {
+                    NitroxModel.Logger.Log.Error("MulitplayerBuilder - UpdateGhostModel failed - constructableBase: " + componentInParent );
+                }
+#endif
+                
+                if (component is BaseAddFaceGhost && !flag2)
+                {
+
+                    // This may be caused by a bug in finding the right targeted spot (e.g. at Moonpool Console). This can happen if the builder tool at first placement 
+                    // is aimed at the very outer border of the buildable ghost. 
+                    // Trying to adjust the camera a bit to find the placement face.
+                    for (int i = -3; i <= 3; i++)
+                    {
+                        if (i != 0 && !flag2)
+                        {
+#if TRACE && BUILDING
+                            if (!flag2)
+                            {
+                                NitroxModel.Logger.Log.Error("MulitplayerBuilder - UpdateGhostModel failed - trying to adjust camera aim y: " + (i * 0.1f));
+                            }
+#endif
+
+                            MultiplayerBuilder.overrideTransform.rotation = new Quaternion(MultiplayerBuilder.overrideTransform.rotation.x, MultiplayerBuilder.overrideTransform.rotation.y + (i * 0.1f), MultiplayerBuilder.overrideTransform.rotation.z, MultiplayerBuilder.overrideTransform.rotation.w);
+                            flag2 = componentInParent.UpdateGhostModel(MultiplayerBuilder.GetAimTransform(), MultiplayerBuilder.ghostModel, default(RaycastHit), out flag, componentInParent);
+                            if (flag2)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+#if TRACE && BUILDING
+                    if (!flag2)
+                    {
+                        NitroxModel.Logger.Log.Error("MulitplayerBuilder - UpdateGhostModel finally failed - constructableBase: " + componentInParent + " - This should only happen, if the Player wasn't settled to the Base (swim mode) and constructed an object from inside the base.");
+                    }
+#endif 
+                }
 
                 if (rotationMetadata.HasValue)
                 {
@@ -203,6 +252,16 @@ namespace NitroxClient.MonoBehaviours.Overrides
             {
                 List<GameObject> list = new List<GameObject>();
                 MultiplayerBuilder.GetObstacles(MultiplayerBuilder.placePosition, MultiplayerBuilder.placeRotation, MultiplayerBuilder.bounds, list);
+
+#if TRACE && BUILDING
+                if (list.Count > 0)
+                {
+                    foreach (var item in list)
+                    {
+                        NitroxModel.Logger.Log.Error("MulitplayerBuilder - Obstacles detected - constructableBase: " + componentInParent + " obstacle : " + item);
+                    }
+                }
+#endif 
                 flag2 = list.Count == 0;
                 list.Clear();
             }
@@ -374,7 +433,7 @@ namespace NitroxClient.MonoBehaviours.Overrides
 
             component.transform.position = overridePosition;
             component.transform.rotation = overrideQuaternion;
-
+            
             if (targetBaseGameObject)
             {
                 Base targetBase = targetBaseGameObject.GetComponent<Base>();
@@ -382,6 +441,11 @@ namespace NitroxClient.MonoBehaviours.Overrides
                 if (targetBase != null)
                 {
                     component.ReflectionSet("targetBase", targetBase);
+
+#if TRACE && BUILDING
+                    NitroxModel.Logger.Log.Debug("MulitplayerBuilder - assignedTargetBase: " + targetBase);
+#endif 
+
                     componentInParent.transform.SetParent(targetBase.transform, true);
                 }
                 else

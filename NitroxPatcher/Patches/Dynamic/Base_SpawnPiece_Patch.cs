@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using Harmony;
+using NitroxClient.GameLogic;
 using NitroxClient.MonoBehaviours;
+using NitroxModel.Core;
 using NitroxModel.DataStructures;
 using NitroxModel.Logger;
 using UnityEngine;
@@ -25,7 +27,10 @@ namespace NitroxPatcher.Patches.Dynamic
             {
                 return;
             }
-            
+
+            //NitroxServiceLocator.LocateService<Building>().Base_SpawnPiece_Post(__instance, __result);
+
+            /*
             NitroxId id;
 
             string key = Base_ClearGeometry_Patch.getObjectKey(__result.name, __result.position);
@@ -35,6 +40,7 @@ namespace NitroxPatcher.Patches.Dynamic
                 Log.Debug("When respawning geometry, found id to copy to new object: " + key + " " + id);
                 NitroxEntity.SetNewId(__result.gameObject, id);
             }
+            */
         }
 
         public override void Patch(HarmonyInstance harmony)

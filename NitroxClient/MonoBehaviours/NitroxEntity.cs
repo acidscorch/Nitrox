@@ -59,6 +59,7 @@ namespace NitroxClient.MonoBehaviours
             if (entity != null)
             {
                 gameObjectsById.Remove(entity.Id);
+                Destroy(entity);
             }
             else
             {
@@ -67,6 +68,18 @@ namespace NitroxClient.MonoBehaviours
 
             entity.Id = id;
             gameObjectsById[id] = gameObject;
+        }
+
+        public static void RemoveId(GameObject gameObject)
+        {
+            Validate.NotNull(gameObject);
+            NitroxEntity entity = gameObject.GetComponent<NitroxEntity>();
+            if (entity != null)
+            {
+                gameObjectsById.Remove(entity.Id);
+                Destroy(entity);
+            }
+
         }
 
         public static NitroxId GetId(GameObject gameObject)
@@ -81,6 +94,16 @@ namespace NitroxClient.MonoBehaviours
             SetNewId(gameObject, newId);
 
             return newId;
+        }
+
+        public static NitroxId GetIdNullable(GameObject gameObject)
+        {
+            NitroxEntity entity = gameObject.GetComponent<NitroxEntity>();
+            if (entity)
+            {
+                return entity.Id;
+            }
+            return null;
         }
 
         public void Start()
