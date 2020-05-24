@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
 using NitroxClient.GameLogic;
+using NitroxClient.GameLogic.Bases;
 using NitroxClient.MonoBehaviours;
 using NitroxModel.Core;
 using NitroxModel.DataStructures;
@@ -33,7 +34,7 @@ namespace NitroxPatcher.Patches.Dynamic
                 return;
             }
 
-            NitroxServiceLocator.LocateService<Building>().Base_ClearGeometry_Pre(__instance);
+            NitroxServiceLocator.LocateService<GeometryLayoutChangeHandler>().Base_ClearGeometry_Pre(__instance);
 
             /*Transform[] cellObjects = (Transform[] )__instance.ReflectionGet("cellObjects");
 

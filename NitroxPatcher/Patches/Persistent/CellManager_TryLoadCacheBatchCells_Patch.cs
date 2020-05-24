@@ -4,6 +4,7 @@ using Harmony;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using NitroxClient.MonoBehaviours;
 
 namespace NitroxPatcher.Patches.Persistent
 {
@@ -11,7 +12,12 @@ namespace NitroxPatcher.Patches.Persistent
     {
         public static readonly Type TARGET_CLASS = typeof(CellManager);
         public static readonly MethodInfo TARGET_METHOD = TARGET_CLASS.GetMethod("TryLoadCacheBatchCells", BindingFlags.Public | BindingFlags.Instance);
-        
+
+        /*public static bool Prefix(CellManager __instance, BatchCells cells)
+        {
+            return !Multiplayer.Active;
+        }*/
+
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> instrList = instructions.ToList();
@@ -77,6 +83,7 @@ namespace NitroxPatcher.Patches.Persistent
         public override void Patch(HarmonyInstance harmony)
         {
             PatchTranspiler(harmony, TARGET_METHOD);
+            //PatchPrefix(harmony, TARGET_METHOD);
         }
     }
 }

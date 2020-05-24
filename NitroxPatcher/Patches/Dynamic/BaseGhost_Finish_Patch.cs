@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Harmony;
 using NitroxClient.GameLogic;
+using NitroxClient.GameLogic.Bases;
 using NitroxClient.GameLogic.Helper;
 using NitroxModel.Core;
 using NitroxModel.Helper;
@@ -19,13 +20,13 @@ namespace NitroxPatcher.Patches.Dynamic
 
         public static bool Prefix(BaseGhost __instance)
         {
-            NitroxServiceLocator.LocateService<Building>().BaseGhost_Finish_Pre(__instance);
+            NitroxServiceLocator.LocateService<GeometryLayoutChangeHandler>().BaseGhost_Finish_Pre(__instance);
             return true;
         }
 
         public static void Postfix(BaseGhost __instance)
         {
-            NitroxServiceLocator.LocateService<Building>().BaseGhost_Finish_Post(__instance);
+            NitroxServiceLocator.LocateService<GeometryLayoutChangeHandler>().BaseGhost_Finish_Post(__instance);
         }
 
         public override void Patch(HarmonyInstance harmony)

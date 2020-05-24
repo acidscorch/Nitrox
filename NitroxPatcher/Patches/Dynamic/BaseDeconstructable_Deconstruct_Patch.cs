@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Harmony;
 using NitroxClient.GameLogic;
+using NitroxClient.GameLogic.Bases;
 using NitroxClient.GameLogic.Helper;
 using NitroxModel.Core;
 using NitroxModel.Helper;
@@ -19,7 +20,7 @@ namespace NitroxPatcher.Patches.Dynamic
 
         public static void Prefix(BaseDeconstructable __instance)
         {
-            NitroxServiceLocator.LocateService<Building>().BaseDeconstructable_Deconstruct_Pre(__instance);
+            NitroxServiceLocator.LocateService<GeometryLayoutChangeHandler>().BaseDeconstructable_Deconstruct_Pre(__instance);
         }
 
         public override void Patch(HarmonyInstance harmony)
@@ -70,7 +71,7 @@ namespace NitroxPatcher.Patches.Dynamic
 
         public static void Postfix(Transform geometry)
         {
-            NitroxServiceLocator.LocateService<Building>().BaseDeconstructable_MakeFaceDeconstructable_Post(geometry.gameObject);
+            NitroxServiceLocator.LocateService<GeometryLayoutChangeHandler>().BaseDeconstructable_MakeFaceDeconstructable_Post(geometry.gameObject);
         }
 
         public override void Patch(HarmonyInstance harmony)
@@ -86,7 +87,7 @@ namespace NitroxPatcher.Patches.Dynamic
 
         public static void Postfix(Transform geometry)
         {
-            NitroxServiceLocator.LocateService<Building>().BaseDeconstructable_MakeCellDeconstructable_Post(geometry.gameObject);
+            NitroxServiceLocator.LocateService<GeometryLayoutChangeHandler>().BaseDeconstructable_MakeCellDeconstructable_Post(geometry.gameObject);
         }
 
         public override void Patch(HarmonyInstance harmony)

@@ -79,7 +79,6 @@ namespace NitroxClient.MonoBehaviours
                 gameObjectsById.Remove(entity.Id);
                 Destroy(entity);
             }
-
         }
 
         public static NitroxId GetId(GameObject gameObject)
@@ -92,6 +91,10 @@ namespace NitroxClient.MonoBehaviours
 
             NitroxId newId = new NitroxId();
             SetNewId(gameObject, newId);
+
+//#if TRACE && BUILDING
+//            NitroxModel.Logger.Log.Debug("Creating new id for GameObject - id: " + newId + " gameObject: " + gameObject + " callingMethod: " + new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name);
+//#endif  
 
             return newId;
         }

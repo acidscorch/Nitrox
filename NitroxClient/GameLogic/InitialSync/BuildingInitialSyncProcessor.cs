@@ -5,6 +5,8 @@ using NitroxClient.Communication.Abstract;
 using NitroxClient.GameLogic.Bases;
 using NitroxClient.GameLogic.InitialSync.Base;
 using NitroxClient.MonoBehaviours;
+using NitroxClient.MonoBehaviours.Overrides;
+using NitroxModel.Core;
 using NitroxModel.DataStructures;
 using NitroxModel.DataStructures.GameLogic;
 using NitroxModel.Logger;
@@ -31,6 +33,8 @@ namespace NitroxClient.GameLogic.InitialSync
         public override IEnumerator Process(InitialPlayerSync packet, WaitScreen.ManualWaitItem waitScreenItem)
         {
             completed = false;
+
+            NitroxServiceLocator.LocateService<Building>().IsInitialSyncing = true;
 
             List<BasePiece> basePieces = packet.BasePieces;
             Log.Info("Received initial sync packet with " + basePieces.Count + " base pieces");
@@ -92,6 +96,8 @@ namespace NitroxClient.GameLogic.InitialSync
         {
             ThrottledBuilder.main.QueueDrained -= FinishedCompletedBuildings;
             completed = true;
+
+            NitroxServiceLocator.LocateService<Building>().IsInitialSyncing = false;
         }
 
         // Subnautica changes the Layout of Bases when new BasePieces are added or removed. A simple replay of all the saved BasePieces is not enough, because 
@@ -120,7 +126,7 @@ namespace NitroxClient.GameLogic.InitialSync
                     // #ISSUE 1030#
                     foreach (BasePiece item2 in basePieces)
                     {
-                        if( (item2.TechType.Name.Contains("Reinforcement") || item2.TechType.Name.Contains("Bulkhead")) && item.ItemPosition == item2.ItemPosition && !internalList.Contains(item2))
+                        if( (item2.TechType.Name.Contains("Reinforcement") || item2.TechType.Name.Contains("Bulkhead")) && item2.ConstructionCompleted && item.ItemPosition == item2.ItemPosition && !internalList.Contains(item2))
                         {
                             internalList.Add(item2);
                         }

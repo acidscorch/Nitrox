@@ -130,6 +130,7 @@ namespace NitroxServer.GameLogic.Bases
 #endif
 
             BasePiece basePiece;
+            bool basePieceRemoved = false;
 
             lock (allBasePieces)
             {
@@ -138,11 +139,19 @@ namespace NitroxServer.GameLogic.Bases
                 if (basePiece != null)
                 {
                     allBasePieces.Remove(basePiece);
+                    basePieceRemoved = true;
                 }
                 else
                 {
                     NitroxModel.Logger.Log.Error("BasePieceDeconstructionCompleted - Received DeconstructionCompleted for unknown NitroxID: " + id);
                 }
+            }
+
+            if(basePieceRemoved)
+            {
+                // Add Handlers here to remove stored data in other classes related to this NitroxId and the Id itself (e.g. lockers, machine/reactor inventory, energy states, ...)
+
+
             }
         }
 

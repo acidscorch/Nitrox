@@ -12,9 +12,9 @@ namespace NitroxPatcher.Patches.Dynamic
         public static readonly Type TARGET_CLASS = typeof(Constructable);
         public static readonly MethodInfo TARGET_METHOD = TARGET_CLASS.GetMethod("Construct");
 
-        public static bool Prefix(Constructable __instance)
+        public static bool Prefix(Constructable __instance, ref bool __result)
         {
-            return NitroxServiceLocator.LocateService<Building>().Constructable_Construct_Pre(__instance);
+            return NitroxServiceLocator.LocateService<Building>().Constructable_Construct_Pre(__instance, ref __result);
         }
 
         public static void Postfix(Constructable __instance, bool __result)

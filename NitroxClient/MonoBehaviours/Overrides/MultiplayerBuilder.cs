@@ -114,6 +114,8 @@ namespace NitroxClient.MonoBehaviours.Overrides
             MaterialExtensions.SetColor(MultiplayerBuilder.renderers, ShaderPropertyID._Tint, color);
         }
 
+        public static bool IsInitialSyncing = false;
+
         // Token: 0x06002B9B RID: 11163 RVA: 0x00103EBC File Offset: 0x001020BC
         private static bool CreateGhost()
         {
@@ -165,7 +167,21 @@ namespace NitroxClient.MonoBehaviours.Overrides
                 }
 
                 MultiplayerBuilder.renderers = MaterialExtensions.AssignMaterial(MultiplayerBuilder.ghostModel, MultiplayerBuilder.ghostStructureMaterial);
-                MultiplayerBuilder.SetupRenderers(MultiplayerBuilder.ghostModel, Player.main.IsInSub());
+
+                //test
+                if (IsInitialSyncing)
+                {
+                    MultiplayerBuilder.SetupRenderers(MultiplayerBuilder.ghostModel, false);
+                }
+                else
+                {
+                    MultiplayerBuilder.SetupRenderers(MultiplayerBuilder.ghostModel, Player.main.IsInSub());
+                }
+
+                //orig
+                //MultiplayerBuilder.SetupRenderers(MultiplayerBuilder.ghostModel, Player.main.IsInSub());
+
+
                 MultiplayerBuilder.CreatePowerPreview(MultiplayerBuilder.constructableTechType, MultiplayerBuilder.ghostModel);
                 MultiplayerBuilder.InitBounds(MultiplayerBuilder.prefab);
             }
@@ -195,12 +211,20 @@ namespace NitroxClient.MonoBehaviours.Overrides
 
                 flag2 = componentInParent.UpdateGhostModel(MultiplayerBuilder.GetAimTransform(), MultiplayerBuilder.ghostModel, default(RaycastHit), out flag, componentInParent);
 
-#if TRACE && BUILDING
+
                 if (!flag2)
                 {
-                    NitroxModel.Logger.Log.Error("MulitplayerBuilder - UpdateGhostModel failed - constructableBase: " + componentInParent );
+                    if (component.TargetBase != null)
+                    {
+                        NitroxModel.Logger.Log.Error("MulitplayerBuilder - UpdateGhostModel failed - constructableBase: " + componentInParent);
+                    }
+                    else
+                    {
+                        flag2 = true;
+                    }
+
                 }
-#endif
+
                 
                 if (component is BaseAddFaceGhost && !flag2)
                 {
@@ -247,13 +271,18 @@ namespace NitroxClient.MonoBehaviours.Overrides
                     MultiplayerBuilder.InitBounds(MultiplayerBuilder.ghostModel);
                 }
             }
+            //test
+            /*else
+            {
+                flag2 = MultiplayerBuilder.CheckAsSubModule();
+            }*/
 
             if (flag2)
             {
                 List<GameObject> list = new List<GameObject>();
                 MultiplayerBuilder.GetObstacles(MultiplayerBuilder.placePosition, MultiplayerBuilder.placeRotation, MultiplayerBuilder.bounds, list);
 
-#if TRACE && BUILDING
+
                 if (list.Count > 0)
                 {
                     foreach (var item in list)
@@ -261,7 +290,7 @@ namespace NitroxClient.MonoBehaviours.Overrides
                         NitroxModel.Logger.Log.Error("MulitplayerBuilder - Obstacles detected - constructableBase: " + componentInParent + " obstacle : " + item);
                     }
                 }
-#endif 
+
                 flag2 = list.Count == 0;
                 list.Clear();
             }
@@ -473,10 +502,15 @@ namespace NitroxClient.MonoBehaviours.Overrides
             GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(MultiplayerBuilder.prefab);
             bool flag = false;
             bool flag2 = false;
+
             if (currentSub != null)
             {
-                flag = currentSub.isBase;
-                flag2 = currentSub.isCyclops;
+                // Outside Modules (e.g. SolarPanel) need to be handled differently. We just need the subroot for the transform assignment.
+                if (!MultiplayerBuilder.allowedOutside)
+                {
+                    flag = currentSub.isBase;
+                    flag2 = currentSub.isCyclops;
+                }
                 gameObject.transform.parent = currentSub.GetModulesRoot();
             }
             else if (MultiplayerBuilder.placementTarget != null && MultiplayerBuilder.allowedOutside)
@@ -494,13 +528,24 @@ namespace NitroxClient.MonoBehaviours.Overrides
             Constructable componentInParent3 = gameObject.GetComponentInParent<Constructable>();
             componentInParent3.SetState(false, true);
             global::Utils.SetLayerRecursively(gameObject, LayerMask.NameToLayer((!flag) ? "Interior" : "Default"), true, -1);
+
             if (MultiplayerBuilder.ghostModel != null)
             {
                 UnityEngine.Object.Destroy(MultiplayerBuilder.ghostModel);
             }
 
-            componentInParent3.SetIsInside(flag || flag2);
-            SkyEnvironmentChanged.Send(gameObject, currentSub);
+            componentInParent3.SetIsInside(flag | flag2);
+
+            if (!MultiplayerBuilder.allowedOutside)
+            {
+                SkyEnvironmentChanged.Send(gameObject, currentSub);
+            }
+            else
+            {
+                SubRoot dummyComp = null;
+                SkyEnvironmentChanged.Send(gameObject, dummyComp);
+            }
+
             gameObject.transform.position = overridePosition;
             gameObject.transform.rotation = overrideQuaternion;
 
